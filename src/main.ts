@@ -1,6 +1,7 @@
 import { autoDetectRenderer, Loader, Container, Ticker } from 'pixi.js';
 import type { AbstractRenderer } from 'pixi.js';
 import { CompositeTilemap } from '@pixi/tilemap';
+import { Map } from 'rot-js';
 import wall from './sprites/wall.png';
 
 function makeTilemap(tilemap: CompositeTilemap, resources: Loader['resources']) {
@@ -18,17 +19,16 @@ function makeTilemap(tilemap: CompositeTilemap, resources: Loader['resources']) 
     throw new Error('Failed to load wall texture');
   }
 
-  for (let i = 0; i < tileW; i++) {
-    for (let j = 0; j < tileH; j++) {
-      if (Math.random() > 0.8) {
-        tilemap.tile(wallTexture, i * size, j * size);
-      }
+  const map = new Map.Digger(tileW, tileH);
+  map.create((x, y, content) => {
+    if (content === 0) {
+      return;
     }
-  }
+    tilemap.tile(wallTexture, x * size, y * size);
+  });
 }
 
 function main(renderer: AbstractRenderer) {
-
   const loader = new Loader();
   loader.add('wall', wall);
 
@@ -47,8 +47,8 @@ const renderer = autoDetectRenderer({
   antialias: true,
   autoDensity: true,
   resolution: window.devicePixelRatio || 1,
-  width: 800,
-  height: 600,
+  width: 1024,
+  height: 768,
 });
 
 document.body.appendChild(renderer.view as HTMLCanvasElement);
